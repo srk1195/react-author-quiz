@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import AuthorQuiz from "./AuthorQuiz";
 import { shuffle, sample } from "underscore";
+import { BrowserRouter, Route } from "react-router-dom";
+import AddAuthorForm from "./AddAuthorForm";
 
 const authors = [
 	{
@@ -107,9 +109,21 @@ function onAnswerSelected(answer) {
 	render();
 }
 
+function App() {
+	return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />;
+}
+
+function AuhtorWrapper() {
+	return <AddAuthorForm onAddAuthor={console.log} />;
+}
 function render() {
 	ReactDOM.render(
-		<AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />,
+		<BrowserRouter>
+			<React.Fragment>
+				<Route exact path="/" component={App} />
+				<Route exact path="/add" component={AuhtorWrapper} />
+			</React.Fragment>
+		</BrowserRouter>,
 		document.getElementById("root")
 	);
 }

@@ -2,6 +2,7 @@ import React from "react";
 import "./bootstrap.min.css";
 import "./app.css";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 /* class AuthorQuiz extends Component {
 	render() {
@@ -111,6 +112,7 @@ function AuthorQuiz({ turnData, highlight, onAnswerSelected }) {
 				onAnswerSelected={onAnswerSelected}
 			/>
 			<Continue />
+			<Link to="/add">click here to add an author </Link>
 			<Footer />
 		</div>
 	);
