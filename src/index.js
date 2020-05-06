@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import AuthorQuiz from "./AuthorQuiz";
 import { shuffle, sample } from "underscore";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, withRouter } from "react-router-dom";
 import AddAuthorForm from "./AddAuthorForm";
 
 const authors = [
@@ -96,11 +96,15 @@ function getTurnData(authors) {
 	// console.log(JSON.stringify(allBooks) === JSON.stringify(emptyArr)); // true
 }
 
-const state = {
-	// Sent the JSON to  get random books.
-	turnData: getTurnData(authors),
-	highlight: " "
-};
+let state = resetState();
+
+function resetState() {
+	return {
+		// Sent the JSON to  get random books.
+		turnData: getTurnData(authors),
+		highlight: " "
+	};
+}
 
 function onAnswerSelected(answer) {
 	// state.turnData.author is the author object of correct answer.
@@ -110,12 +114,38 @@ function onAnswerSelected(answer) {
 }
 
 function App() {
-	return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />;
+	return (
+		<AuthorQuiz
+			{...state}
+			onAnswerSelected={onAnswerSelected}
+			onContinue={() => {
+				state = resetState();
+				render();
+			}}
+		/>
+	);
 }
 
-function AuhtorWrapper() {
-	return <AddAuthorForm onAddAuthor={console.log} />;
-}
+// function AuhtorWrapper() {
+// 	return (
+// 		<AddAuthorForm
+// 			onAddAuthor={author => {
+// 				authors.push(author);
+// 			}}
+// 		/>
+// 	);
+// }
+// As it is only client-side, we cannot navigate across the pages.
+// So,  using history prop, we can push the new path to the root.
+const AuhtorWrapper = withRouter(({ history }) => (
+	<AddAuthorForm
+		onAddAuthor={author => {
+			authors.push(author);
+			history.push("/");
+		}}
+	/>
+));
+
 function render() {
 	ReactDOM.render(
 		<BrowserRouter>

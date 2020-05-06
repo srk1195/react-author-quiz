@@ -52,18 +52,18 @@ class AuthorForm extends React.Component {
 					/>
 				</div>
 				<div className="AddAuthorForm__input">
+					<label htmlFor="Books"> Books </label>
 					{console.log("here")}
 					{this.state.books.map(book => (
 						<p key={book}> {book} </p>
 					))}
-					<label htmlFor="Books"> Books </label>
 					<input
 						type="text"
 						name="bookTemp"
 						value={this.state.bookTemp}
 						onChange={this.onFieldChange}
 					/>
-					<button onClick={this.handleAddBook}> + </button>
+					<input type="button" value="+" onClick={this.handleAddBook} />
 				</div>
 				<div className="AddAuthorForm__input">
 					{/* <label htmlFor="name"> Submit the Author </label> */}

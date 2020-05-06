@@ -82,7 +82,23 @@ Turn.propTypes = {
 };
 
 function Continue(props) {
-	return <div />;
+	console.log(props.author);
+	return (
+		<div className="row continue">
+			{props.show ? (
+				<div className="coll-11">
+					{" "}
+					<button
+						className="btn btn-warning btn-lg float-right"
+						onClick={props.onContinue}
+					>
+						{" "}
+						Continue{" "}
+					</button>{" "}
+				</div>
+			) : null}
+		</div>
+	);
 }
 
 function Footer(props) {
@@ -102,7 +118,7 @@ function Footer(props) {
 	);
 }
 
-function AuthorQuiz({ turnData, highlight, onAnswerSelected }) {
+function AuthorQuiz({ turnData, highlight, onAnswerSelected, onContinue }) {
 	return (
 		<div className="container-fluid">
 			<Hero />
@@ -111,7 +127,11 @@ function AuthorQuiz({ turnData, highlight, onAnswerSelected }) {
 				highlight={highlight}
 				onAnswerSelected={onAnswerSelected}
 			/>
-			<Continue />
+			<Continue
+				author={turnData.author}
+				show={highlight === "correct"}
+				onContinue={onContinue}
+			/>
 			<Link to="/add">click here to add an author </Link>
 			<Footer />
 		</div>
