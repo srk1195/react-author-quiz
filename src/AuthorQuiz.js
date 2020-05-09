@@ -3,6 +3,7 @@ import "./bootstrap.min.css";
 import "./app.css";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 
 /* class AuthorQuiz extends Component {
 	render() {
@@ -11,10 +12,13 @@ import { Link } from "react-router-dom";
 } */
 
 function Book(props) {
+	//console.log("In books componenet");
 	return (
 		<div
 			className="answer"
 			onClick={() => {
+				// On clicking the book comp, onAnswerSelected() will be invoked which sends
+				// a dispatch request.
 				props.onBookClick(props.title);
 			}}
 		>
@@ -46,7 +50,7 @@ function Turn({ author, books, highlight, onAnswerSelected }) {
 
 		return mapping[highlight];
 	}
-
+	//console.log("In turn Component");
 	return (
 		<div
 			className="row turn"
@@ -82,7 +86,7 @@ Turn.propTypes = {
 };
 
 function Continue(props) {
-	console.log(props.author);
+	// console.log(props.author);
 	return (
 		<div className="row continue">
 			{props.show ? (
@@ -118,7 +122,32 @@ function Footer(props) {
 	);
 }
 
-function AuthorQuiz({ turnData, highlight, onAnswerSelected, onContinue }) {
+function mapStateToProps(state) {
+	//console.log(state, "in mapStateToProps");
+	return {
+		turnData: state.turnData,
+		highlight: state.highlight
+	};
+}
+
+function mapDispatchToProps(dispatch) {
+	// Whenever the dispatch() is called, the reducer function gets invoked with the latest app state,action type
+	// and extra  Parameters.
+	return {
+		onAnswerSelected: answer => {
+			dispatch({ type: "ANSWER_SELECTED", answer });
+		},
+		onContinue: () => {
+			dispatch({ type: "CONTINUE" });
+		}
+	};
+}
+
+const AuthorQuiz = connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(function AuthorQuiz({ turnData, highlight, onAnswerSelected, onContinue }) {
+	//console.log("In Author Quiz Component");
 	return (
 		<div className="container-fluid">
 			<Hero />
@@ -136,6 +165,6 @@ function AuthorQuiz({ turnData, highlight, onAnswerSelected, onContinue }) {
 			<Footer />
 		</div>
 	);
-}
+});
 
 export default AuthorQuiz;

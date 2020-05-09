@@ -4,6 +4,8 @@ import AuthorQuiz from "./AuthorQuiz";
 import { shuffle, sample } from "underscore";
 import { BrowserRouter, Route, withRouter } from "react-router-dom";
 import AddAuthorForm from "./AddAuthorForm";
+import * as ReactRedux from "react-redux";
+import * as Redux from "redux";
 
 const authors = [
 	{
@@ -82,10 +84,10 @@ function getTurnData(authors) {
 	const fourRandomBooks = shuffle(allBooks).slice(0, 4);
 	const answer = sample(fourRandomBooks);
 
-	console.log(fourRandomBooks, answer);
+	/* 	console.log(fourRandomBooks, answer);
 	console.log(
 		authors.find(author => author.books.some(title => title === answer))
-	);
+	); */
 
 	// sending the 4 books & object of the answer value we got from sample()
 	return {
@@ -96,35 +98,62 @@ function getTurnData(authors) {
 	// console.log(JSON.stringify(allBooks) === JSON.stringify(emptyArr)); // true
 }
 
-let state = resetState();
+function reducer(
+	state = { authors, turnData: getTurnData(authors), highlight: "" },
+	action
+) {
+	switch (action.type) {
+		case "ANSWER_SELECTED":
+			//console.log("in case answer selected.");
+			//console.log(state.turnData.author);
+			const isCorrect = state.turnData.author.books.some(
+				title => title === action.answer
+			);
 
-function resetState() {
-	return {
-		// Sent the JSON to  get random books.
-		turnData: getTurnData(authors),
-		highlight: " "
-	};
+			return Object.assign({}, state, {
+				highlight: isCorrect ? "correct" : "wrong"
+			});
+
+		// On Continue, we need to regenerate the question by sending resetting the state.
+		case "CONTINUE":
+			return Object.assign({}, state, {
+				highlight: "",
+				turnData: getTurnData(state.authors)
+			});
+
+		default:
+			return state;
+	}
 }
 
-function onAnswerSelected(answer) {
-	// state.turnData.author is the author object of correct answer.
-	const isCorrect = state.turnData.author.books.some(title => title === answer);
-	state.highlight = isCorrect ? "correct" : "wrong";
-	render();
-}
+let store = Redux.createStore(reducer);
 
 function App() {
 	return (
-		<AuthorQuiz
-			{...state}
-			onAnswerSelected={onAnswerSelected}
-			onContinue={() => {
-				state = resetState();
-				render();
-			}}
-		/>
+		<ReactRedux.Provider store={store}>
+			<AuthorQuiz />
+		</ReactRedux.Provider>
 	);
 }
+
+const AuhtorWrapper = withRouter(({ history }) => (
+	<AddAuthorForm
+		onAddAuthor={author => {
+			authors.push(author);
+			history.push("/");
+		}}
+	/>
+));
+
+ReactDOM.render(
+	<BrowserRouter>
+		<React.Fragment>
+			<Route exact path="/" component={App} />
+			<Route exact path="/add" component={AuhtorWrapper} />
+		</React.Fragment>
+	</BrowserRouter>,
+	document.getElementById("root")
+);
 
 // function AuhtorWrapper() {
 // 	return (
@@ -137,25 +166,3 @@ function App() {
 // }
 // As it is only client-side, we cannot navigate across the pages.
 // So,  using history prop, we can push the new path to the root.
-const AuhtorWrapper = withRouter(({ history }) => (
-	<AddAuthorForm
-		onAddAuthor={author => {
-			authors.push(author);
-			history.push("/");
-		}}
-	/>
-));
-
-function render() {
-	ReactDOM.render(
-		<BrowserRouter>
-			<React.Fragment>
-				<Route exact path="/" component={App} />
-				<Route exact path="/add" component={AuhtorWrapper} />
-			</React.Fragment>
-		</BrowserRouter>,
-		document.getElementById("root")
-	);
-}
-
-render();
